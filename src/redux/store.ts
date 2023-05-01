@@ -2,21 +2,19 @@ import { combineReducers, configureStore, Action } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
-import { bookDetailsApi } from '../entites/api/bookDetaisApi';
 import { getBooksApi } from '../entites/api/getBooks';
-import getBooksSlice from '../components/SearchBar/redux/SearchSlice'
+import searchReducer from '../components/SearchBar/redux/SearchSlice'
 
 const rootReducer = combineReducers({
-  [bookDetailsApi.reducerPath]: bookDetailsApi.reducer,
   [getBooksApi.reducerPath]: getBooksApi.reducer,
-  getBooks:getBooksSlice
+  searchApi:searchReducer
 });
 
 export const configureAppStore = () => {
   const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(bookDetailsApi.middleware,getBooksApi.middleware),
+      getDefaultMiddleware().concat(getBooksApi.middleware),
   });
 
   setupListeners(store.dispatch);

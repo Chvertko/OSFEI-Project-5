@@ -1,16 +1,16 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Book, GOOGLE_BOOKS_API_KEY } from "../../TS";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { GOOGLE_BOOKS_API_KEY, Response, VolumesQueryArg } from "../../TS";
+
 
 export const getBooksApi = createApi({
-  reducerPath: 'getBooksApi',
+  reducerPath: 'getbooksApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://www.googleapis.com/books/v1/' }),
-  endpoints: (builder) => ({
-    searchBooks: builder.query<Book[], string>({
-      query: (query) => `volumes?q=${query}&key=${GOOGLE_BOOKS_API_KEY}`,
+  endpoints:(builder) => ({
+    searchBooks: builder.query<Response, VolumesQueryArg>({
+       query: (arg) => ({
+       url: `volumes?q=${arg.q}&key=${GOOGLE_BOOKS_API_KEY}&maxResults=16`,
+      }),
     }),
-  }),
-});
-
-export type BooksApi = typeof getBooksApi;
-export default getBooksApi.reducer;
-  
+  })
+})
+export const {useSearchBooksQuery} = getBooksApi

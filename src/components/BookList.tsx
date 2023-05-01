@@ -1,27 +1,24 @@
 import React from 'react';
-import { useAppSelector } from '../redux/store';
-import { Book } from '../TS/Interfaces/Book';
+import { BookListProps,  Volume } from '../TS';
 
-export const BookList = () => {
-  const { error, items, loading } = useAppSelector((state) => state.getBooks);
-  console.log(items);
+export const BookList = ({ data, isError, isLoading }: BookListProps) => {
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>{error}</div>;
+  if (isError) {
+    return <div>{isError}</div>;
   }
 
-  if (items.length === 0) {
-    return <div>No books found</div>;
-  }
+  // if (data.length === 0) {
+  //   return <div>No books found</div>;
+  // }
 
   return (
     <ul>
-      {items.map((book: Book) => (
-        <li >{book.items.volumeInfo.title}</li>
+      {data.map((book: Volume) => (
+        <li key={book.id} >{book.volumeInfo.title}</li>
       ))}
     </ul>
   );

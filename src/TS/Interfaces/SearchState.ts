@@ -1,4 +1,13 @@
 export interface SearchState {
-    query: string;
-    status: "idle" | "loading" | "succeeded" | "failed";
-  }
+  loading: boolean;
+  error: string | null;
+  items: {
+    id: string;
+    title: string;
+    authors?: string[];
+    publisher?: string;
+    publishedDate?: string;
+    description?: string;
+    thumbnail?: string;
+  }[];
+}

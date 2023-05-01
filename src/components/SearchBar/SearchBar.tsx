@@ -3,21 +3,15 @@ import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
 import { BookList } from '../BookList';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
 import SearchIcon from '@mui/icons-material/Search';
 import { Search, SearchIconWrapper, StyledInputBase } from '../../entites/UI/SearchInput/style';
-import { searchBooks } from './redux/SearchSlice';
-
+import { useSearchBooks } from '../../hooks/useSearch';
 export const SearchBar = () => {
-  const dispatch: AppDispatch = useDispatch();
+  
   const theme = useTheme();
-  const [query, setQuery] = useState('');
-  const handleSearch = async (newQuery: string) => {
-    setQuery(newQuery);
-    await dispatch(searchBooks(newQuery));
-    console.log(newQuery)
-  };
+  const [q, setQ] = useState('');
+  const {data,  isError, isLoading} = useSearchBooks({q:q})
+
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -40,12 +34,15 @@ export const SearchBar = () => {
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
               sx={{color:theme.palette.background.paper}}
-              onChange={(event:any) => handleSearch(event.target.value)}
-              value={query}
+              onChange={(event:any) => {
+                setQ(event.target.value)}
+              } 
+              value={q}
             />
           </Search>
         </Toolbar>
       </AppBar>
+      <BookList data={data?.items || []} isError={isError} isLoading={isLoading}/>
     </Box>
   );
 };

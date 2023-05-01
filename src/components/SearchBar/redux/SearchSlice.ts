@@ -1,47 +1,55 @@
-import { createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import { Response } from '../../../TS';
-import { getBooksApi } from '../../../entites/api/getBooks';
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { Response, SearchState, Volume, VolumesQueryArg } from "../../../TS";
+import { useSearchBooksQuery } from "../../../entites/api/getBooks";
 
-interface BooksState {
-  loading: boolean;
-  items: Response['items'] | [];
-  error: string | null;
-}
-
-const initialState: BooksState = {
+const initialState: SearchState = {
   loading: false,
-  items:[],
   error: null,
+  items: [],
 };
-export const searchBooks = createAsyncThunk(
-  'books/searchBooks',
-  async (query: string) => {
-    const  response = useSearchBooksQuery(query)
-    const data =  response.data;
-    return data
-  }
-);
 
-const getBooksSlice = createSlice({
-  name: 'getBooks',
+export const searchSlice = createSlice({
+  name: "search",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(searchBooks.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(searchBooks.fulfilled, (state, action) => {
-       state.loading = false;
-       state.items = action.payload;
-    });      
-    builder.addCase(searchBooks.rejected, (state, action) => {
+  reducers: {
+    clearSearch: (state) => {
       state.loading = false;
-      state.error = action.error.message ?? 'Failed to search books';
-    });
+      state.error = null;
+      state.items = [];
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addMatcher(
+        (action) => action.type.endsWith("/pending"),
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        }
+      )
+      .addMatcher(
+        (action) => action.type.endsWith("/rejected"),
+        (state, action) => {
+          state.loading = false;
+          state.error = action.error.message ?? "Failed to search books";
+        }
+      )
+      .addMatcher(
+        (action) => action.type.endsWith("/fulfilled"),
+        (state, action: PayloadAction<Response>) => {
+          state.loading = false;
+          state.items = action.payload.items.map((volume: Volume) => ({
+            id: volume.id,
+            title: volume.volumeInfo.title,
+            authors: volume.volumeInfo.authors,
+            publisher: volume.volumeInfo.publisher,
+            publishedDate: volume.volumeInfo.publishedDate,
+            description: volume.volumeInfo.description,
+            thumbnail: volume.volumeInfo.imageLinks?.thumbnail,
+          }));
+        }
+      );
   },
 });
 
-export default getBooksSlice.reducer;
-
-export const useSearchBooksQuery = getBooksApi.useSearchBooksQuery;
+export default searchSlice.reducer

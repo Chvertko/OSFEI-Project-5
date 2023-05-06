@@ -4,10 +4,13 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { getBooksApi } from '../entites/api/getBooks';
 import searchReducer from '../components/SearchBar/redux/SearchSlice'
-
+import bookDetailReducer from '../pages/BookDetailPage/redux/bookDetailSlice'
+import addAtFavoriteSlice from '../entites/UI/BookCard/redux/addAtFavoriteSlice'
 const rootReducer = combineReducers({
   [getBooksApi.reducerPath]: getBooksApi.reducer,
-  searchApi:searchReducer
+  searchApi:searchReducer,
+  bookDetail:bookDetailReducer,
+  addfavorite:addAtFavoriteSlice
 });
 
 export const configureAppStore = () => {

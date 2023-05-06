@@ -1,14 +1,15 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Response, SearchState, Volume, VolumesQueryArg } from "../../../TS";
-import { useSearchBooksQuery } from "../../../entites/api/getBooks";
+import { Response, SearchState, Volume} from "../../../TS";
+
 
 const initialState: SearchState = {
   loading: false,
   error: null,
-  items: [],
+  items: undefined,
+  q: ''
 };
 
-export const searchSlice = createSlice({
+export const searchSlice  = createSlice({
   name: "search",
   initialState,
   reducers: {
@@ -17,6 +18,9 @@ export const searchSlice = createSlice({
       state.error = null;
       state.items = [];
     },
+    saveQueryString: (state, action) => {
+      state.q = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -38,18 +42,23 @@ export const searchSlice = createSlice({
         (action) => action.type.endsWith("/fulfilled"),
         (state, action: PayloadAction<Response>) => {
           state.loading = false;
-          state.items = action.payload.items.map((volume: Volume) => ({
+          state.items = action.payload.items?.map((volume: Volume) => ({
             id: volume.id,
-            title: volume.volumeInfo.title,
-            authors: volume.volumeInfo.authors,
-            publisher: volume.volumeInfo.publisher,
-            publishedDate: volume.volumeInfo.publishedDate,
-            description: volume.volumeInfo.description,
-            thumbnail: volume.volumeInfo.imageLinks?.thumbnail,
-          }));
+            volumeInfo: {
+              title: volume.volumeInfo.title,
+              authors: volume.volumeInfo.authors || [],
+              publisher: volume.volumeInfo.publisher || "",
+              publishedDate: volume.volumeInfo.publishedDate || "",
+              description: volume.volumeInfo.description || "",
+              imageLinks: {
+                thumbnail: volume.volumeInfo.imageLinks?.thumbnail || "",
+                smallThumbnail: volume.volumeInfo.imageLinks?.smallThumbnail || "",
+              },
+            },
+          })) || [];
         }
       );
   },
 });
-
+export const {saveQueryString} = searchSlice.actions
 export default searchSlice.reducer

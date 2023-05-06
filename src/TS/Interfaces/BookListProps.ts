@@ -1,8 +1,9 @@
-import { Response } from "./Response";
+import { Volume} from "./Response";
 
 export interface BookListProps {
-    data: Response['items'] | [];
+    data: Volume[] | [];
     isError: boolean;
     isLoading: boolean;
+    isFetching: boolean
   }
   

@@ -1,25 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BookListProps,  Volume } from '../TS';
+import BookCard from '../entites/UI/BookCard/BookCard';
 
-export const BookList = ({ data, isError, isLoading }: BookListProps) => {
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
+export const BookList = ({ data, isError, isLoading, isFetching}: BookListProps) => {
+  useEffect(() => {
+  },[data])
   if (isError) {
     return <div>{isError}</div>;
   }
-
-  // if (data.length === 0) {
-  //   return <div>No books found</div>;
-  // }
-
+  console.log(data)
   return (
-    <ul>
+    <>
+    
+    <ul style={{display:"flex",maxWidth:'100%',flexWrap:'wrap', gap:'30px',justifyContent:'center',alignItems:'center'}}>
       {data.map((book: Volume) => (
-        <li key={book.id} >{book.volumeInfo.title}</li>
+        <>
+        <BookCard key={book.id}  book={book} ></BookCard>
+        
+        </>
       ))}
     </ul>
+    </>
   );
 };
